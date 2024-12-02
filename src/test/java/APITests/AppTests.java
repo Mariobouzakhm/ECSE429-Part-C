@@ -20,8 +20,6 @@ public class AppTests {
     private List<CSVWriterObject> runTimeResultsTodoDelete;
     private List<CSVWriterObject> runTimeResultsTodoModify;
 
-    private List<CSVWriterObject> runTimeResultsCategory;
-
     private List<CSVWriterObject> memoryResultsCreate;
     private List<CSVWriterObject>memoryResultsDelete;
     private List<CSVWriterObject> memoryResultsModify;
@@ -30,14 +28,27 @@ public class AppTests {
     private List<CSVWriterObject> cpuUsageResultsModify;
     private List<CSVWriterObject> cpuUsageResultsDelete;
 
+    private List<CSVWriterObject> runTimeResultsTodoCreateCategories;
+    private List<CSVWriterObject> runTimeResultsTodoDeleteCategories;
+    private List<CSVWriterObject> runTimeResultsTodoModifyCategories;
+
+    private List<CSVWriterObject> memoryResultsCreateCategories;
+    private List<CSVWriterObject>memoryResultsDeleteCategories;
+    private List<CSVWriterObject> memoryResultsModifyCategories;
+
+    private List<CSVWriterObject> cpuUsageResultsCreateCategories;
+    private List<CSVWriterObject> cpuUsageResultsModifyCategories;
+    private List<CSVWriterObject> cpuUsageResultsDeleteCategories;
+
+    private final int[] NUMBER_OF_OBJECTS = {1, 5, 10, 25, 50, 100, 250, 1000, 2500, 5000};
+    private int test_number = 10;
+
 
     @BeforeAll
     public void setup() {
         runTimeResultsTodoCreate = new ArrayList<>();
         runTimeResultsTodoDelete = new ArrayList<>();
         runTimeResultsTodoModify = new ArrayList<>();
-
-        runTimeResultsCategory = new ArrayList<>();
 
         memoryResultsCreate = new ArrayList<>();
         memoryResultsDelete = new ArrayList<>();
@@ -46,6 +57,18 @@ public class AppTests {
         cpuUsageResultsCreate = new ArrayList<>();
         cpuUsageResultsModify = new ArrayList<>();
         cpuUsageResultsDelete = new ArrayList<>();
+
+        runTimeResultsTodoCreateCategories = new ArrayList<>();
+        runTimeResultsTodoDeleteCategories = new ArrayList<>();
+        runTimeResultsTodoModifyCategories = new ArrayList<>();
+
+        memoryResultsCreateCategories = new ArrayList<>();
+        memoryResultsDeleteCategories = new ArrayList<>();
+        memoryResultsModifyCategories = new ArrayList<>();
+
+        cpuUsageResultsCreateCategories = new ArrayList<>();
+        cpuUsageResultsModifyCategories = new ArrayList<>();
+        cpuUsageResultsDeleteCategories = new ArrayList<>();
 
         System.out.println("Lists Setup Done");
     }
@@ -56,11 +79,15 @@ public class AppTests {
         RestAssured.port = 4567;
 
         Runtime runtime = Runtime.getRuntime();
-        try {
-            this.p = runtime.exec("java -jar runTodoManagerRestAPI-1.5.5.jar");
-            Thread.sleep(1000);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+
+        while(true) {
+            try {
+                this.p = runtime.exec("java -jar runTodoManagerRestAPI-1.5.5.jar");
+                Thread.sleep(1000);
+                break;
+            } catch (IOException | InterruptedException e) {
+                p.destroy();
+            }
         }
 
         int status_code = 0;
@@ -76,11 +103,14 @@ public class AppTests {
                     e.printStackTrace();
                 }
 
-                try {
-                    this.p = runtime.exec("java -jar runTodoManagerRestAPI-1.5.5.jar");
-                    Thread.sleep(1000);
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+                while(true) {
+                    try {
+                        this.p = runtime.exec("java -jar runTodoManagerRestAPI-1.5.5.jar");
+                        Thread.sleep(1000);
+                        break;
+                    } catch (IOException | InterruptedException e) {
+                        p.destroy();
+                    }
                 }
             }
         }
@@ -99,366 +129,345 @@ public class AppTests {
     @AfterAll
     public void compileResults() {
         System.out.println("Compiling Results to .csv");
-        createRunTimeCSV(runTimeResultsCategory, "csv/runTimeResultsCategory.csv");
 
-        createRunTimeCSV(runTimeResultsTodoCreate, "csv/runTimeResultsTodoCreate.csv");
-        createRunTimeCSV(runTimeResultsTodoModify, "csv/runTimeResultsTodoModify.csv");
-        createRunTimeCSV(runTimeResultsTodoDelete, "csv/runTimeResultsTodoDelete.csv");
+        if(runTimeResultsTodoCreate.size() > 0)
+            createRunTimeCSV(runTimeResultsTodoCreate, "csv/runTimeResultsTodoCreate.csv");
+        if(runTimeResultsTodoModify.size() > 0)
+            createRunTimeCSV(runTimeResultsTodoModify, "csv/runTimeResultsTodoModify.csv");
+        if(runTimeResultsTodoDelete.size() > 0)
+            createRunTimeCSV(runTimeResultsTodoDelete, "csv/runTimeResultsTodoDelete.csv");
 
-        createMemoryUsageCSV(memoryResultsCreate, "csv/memoryResultsCreate.csv");
-        createMemoryUsageCSV(memoryResultsModify, "csv/memoryResultsModify.csv");
-        createMemoryUsageCSV(memoryResultsDelete, "csv/memoryResultsDelete.csv");
+        if(memoryResultsCreate.size() > 0)
+            createMemoryUsageCSV(memoryResultsCreate, "csv/memoryResultsCreate.csv");
+        if(memoryResultsModify.size() > 0)
+            createMemoryUsageCSV(memoryResultsModify, "csv/memoryResultsModify.csv");
+        if(memoryResultsDelete.size() > 0)
+            createMemoryUsageCSV(memoryResultsDelete, "csv/memoryResultsDelete.csv");
 
-        createCPUUsageCSV(cpuUsageResultsCreate, "csv/cpuUsageResultsCreate.csv");
-        createCPUUsageCSV(cpuUsageResultsModify, "csv/cpuUsageResultsModify.csv");
-        createCPUUsageCSV(cpuUsageResultsDelete, "csv/cpuUsageResultsDelete.csv");
+        if(cpuUsageResultsCreate.size() > 0)
+            createCPUUsageCSV(cpuUsageResultsCreate, "csv/cpuUsageResultsCreate.csv");
+        if(cpuUsageResultsModify.size() > 0)
+            createCPUUsageCSV(cpuUsageResultsModify, "csv/cpuUsageResultsModify.csv");
+        if(cpuUsageResultsDelete.size() > 0)
+            createCPUUsageCSV(cpuUsageResultsDelete, "csv/cpuUsageResultsDelete.csv");
+
+
+        if(runTimeResultsTodoCreateCategories.size() > 0)
+            createRunTimeCSV(runTimeResultsTodoCreateCategories, "csv/runTimeResultsTodoCreateCategories.csv");
+        if(runTimeResultsTodoModifyCategories.size() > 0)
+            createRunTimeCSV(runTimeResultsTodoModifyCategories, "csv/runTimeResultsTodoModifyCategories.csv");
+        if(runTimeResultsTodoDeleteCategories.size() > 0)
+            createRunTimeCSV(runTimeResultsTodoDeleteCategories, "csv/runTimeResultsTodoDeleteCategories.csv");
+
+        if(memoryResultsCreateCategories.size() > 0)
+            createMemoryUsageCSV(memoryResultsCreateCategories, "csv/memoryResultsCreateCategories.csv");
+        if(memoryResultsModifyCategories.size() > 0)
+            createMemoryUsageCSV(memoryResultsModifyCategories, "csv/memoryResultsModifyCategories.csv");
+        if(memoryResultsDeleteCategories.size() > 0)
+            createMemoryUsageCSV(memoryResultsDeleteCategories, "csv/memoryResultsDeleteCategories.csv");
+
+        if(cpuUsageResultsCreateCategories.size() > 0)
+            createCPUUsageCSV(cpuUsageResultsCreateCategories, "csv/cpuUsageResultsCreateCategories.csv");
+        if(cpuUsageResultsModifyCategories.size() > 0)
+            createCPUUsageCSV(cpuUsageResultsModifyCategories, "csv/cpuUsageResultsModifyCategories.csv");
+        if(cpuUsageResultsDeleteCategories.size() > 0)
+            createCPUUsageCSV(cpuUsageResultsDeleteCategories, "csv/cpuUsageResultsDeleteCategories.csv");
     }
 
     @Test
-    public void testRuntimeCreateTodoEmptyServer() {
-        long createTodoTime = RuntimeTests.createTodo("Mock Title", true, "Mock Description");
-        System.out.println("Create Todo Time: " + createTodoTime);
+    public void createTodoRunTime() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsTodoCreate.add(new CSVWriterObject(1, "Create 1 Todo, Empty Server", createTodoTime, 0));
+        System.out.println("Finished Setup");
+
+        long startTime = System.currentTimeMillis();
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = RuntimeTests.createNTodo(iterations, "Mock Title", true, "Mock Description");
+            runTimeResultsTodoCreate.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
+
+        long endTime = System.currentTimeMillis();
+        runTimeResultsTodoCreate.add(new CSVWriterObject(test_number, String.valueOf("TOTAL"), endTime-startTime, 0));
     }
 
     @Test
-    public void testRuntimeCreate100TodoEmptyServer() {
-        long create100TodoTime = RuntimeTests.createNTodo(100, "Mock Title", true, "Mock Description");
-        System.out.println("Creation 20 Todo: " + create100TodoTime);
+    public void modifyTodoRuntTime() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsTodoCreate.add(new CSVWriterObject(2, "Create 100 Todo, Empty Server", create100TodoTime, 0));
+        long startTime = System.currentTimeMillis();
 
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = RuntimeTests.modifyTodoDescriptionNTimes(iterations, 1, "Mock Desc");
+            runTimeResultsTodoModify.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
+
+        long endTime = System.currentTimeMillis();
+        runTimeResultsTodoModify.add(new CSVWriterObject(test_number, String.valueOf("TOTAL"), endTime-startTime, 0));
     }
 
     @Test
-    public void testRuntimeCreate20TodoEmptyServer() {
-        long create20TodoTime = RuntimeTests.createNTodo(20, "Mock Title", true, "Mock Description");
-        System.out.println("Creation 20 Todo: " + create20TodoTime);
+    public void deleteTodoRunTime() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsTodoCreate.add(new CSVWriterObject(3, "Create 20 Todo, Empty Server", create20TodoTime, 0));
+        long startTime = System.currentTimeMillis();
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = RuntimeTests.deleteNTodo(iterations, 1);
+            runTimeResultsTodoDelete.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
+
+        long endTime = System.currentTimeMillis();
+        runTimeResultsTodoDelete.add(new CSVWriterObject(test_number, String.valueOf("TOTAL"), endTime-startTime, 0));
     }
 
     @Test
-    public void testRuntimeCreate500TodoEmptyServer() {
-        long create500TodoTime = RuntimeTests.createNTodo(500, "Mock Title", true, "Mock Description");
-        System.out.println("Creation 500 Todo: " + create500TodoTime);
+    public void createTodoMemory() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsTodoCreate.add(new CSVWriterObject(4, "Create 500 Todo, Empty Server", create500TodoTime, 0));
-    }
+        System.out.println("Finished Setup");
 
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-    @Test
-    public void testRuntimeCreateTodo1000ServerServer() {
-        createNTodos(1000);
+            long createTodoTime = MemoryTests.createNTodo(iterations, "Mock Title", true, "Mock Description");
+            memoryResultsCreate.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
 
-        long createTodoTime = RuntimeTests.createTodo("Mock Title", true, "Mock Description");
-        System.out.println("Create Todo Time: " + createTodoTime);
-
-        runTimeResultsTodoCreate.add(new CSVWriterObject(5, "Create 1 Todo, 1000 Objects Server", createTodoTime, 0));
-    }
+            System.out.println("Finished "+iterations);
+        }
+  }
 
     @Test
-    public void testRuntimeCreate100Todo1000Server() {
-        createNTodos(1000);
+    public void modifyTodoMemory() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        long create20TodoTime = RuntimeTests.createNTodo(100, "Mock Title", true, "Mock Description");
-        System.out.println("Creation 20 Todo: " + create20TodoTime);
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-        runTimeResultsTodoCreate.add(new CSVWriterObject(6, "Create 100 Todo, 1000 Objects Server", create20TodoTime, 0));
+            long createTodoTime = MemoryTests.modifyNTodoDescription(iterations, 1, "Mock Desc");
+            memoryResultsModify.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
 
-    }
-
-    @Test
-    public void testRuntimeCreate20Todo1000Server() {
-        createNTodos(1000);
-
-        long create20TodoTime = RuntimeTests.createNTodo(20, "Mock Title", true, "Mock Description");
-        System.out.println("Creation 20 Todo: " + create20TodoTime);
-
-        runTimeResultsTodoCreate.add(new CSVWriterObject(7, "Create 20 Todo, 1000 Objects Server", create20TodoTime, 0));
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testRuntimeCreate500Todo1000Server() {
-        createNTodos(1000);
+    public void deleteTodoMemory() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        long create20TodoTime = RuntimeTests.createNTodo(500, "Mock Title", true, "Mock Description");
-        System.out.println("Creation 500 Todo: " + create20TodoTime);
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-        runTimeResultsTodoCreate.add(new CSVWriterObject(8, "Create 500 Todo, 1000 Objects Server", create20TodoTime, 0));
-    }
+            long createTodoTime = MemoryTests.deleteNTodo(iterations, 1);
+            memoryResultsDelete.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
 
-    @Test
-    public void testRuntimeCreateCategoryEmptyServer() {
-        long result = RuntimeTests.createCategory("Mock Title", "Mock Description");
-        System.out.println("Creation Category: " + result);
-
-        runTimeResultsCategory.add(new CSVWriterObject(1, "Create 1 Category, Empty Server", result, 0));
-
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testRuntimeCreate100CategoryEmptyServer() {
-        long result = RuntimeTests.createNCategory(100, "Mock Title", "Mock Description");
-        System.out.println("Creation 100 Categories: " + result);
+    public void createTodoUsage() throws InterruptedException {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsCategory.add(new CSVWriterObject(2, "Create 100 Categories, Empty", result, 0));
-    }
+        System.out.println("Finished Setup");
 
-    @Test
-    public void testRuntimeCreate20CategoryEmptyServer() {
-        long result = RuntimeTests.createNCategory(20, "Mock Title", "Mock Description");
-        System.out.println("Creation 100 Categories: " + result);
 
-        runTimeResultsCategory.add(new CSVWriterObject(3, "Create 20 Categories, Empty", result, 0));
-    }
 
-    @Test
-    public void testRuntimeCreate500CategoryEmptyServer() {
-        createNCategories(1000);
-        long result = RuntimeTests.createNCategory(500, "Mock Title", "Mock Description");
-        System.out.println("Creation 100 Categories: " + result);
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-        runTimeResultsCategory.add(new CSVWriterObject(4, "Create 500 Categories, Empty Server", result, 0));
-    }
+            double createTodoTime = CPUUsageTests.createNTodo(iterations, "Mock Title", true, "Mock Description");
+            cpuUsageResultsCreate.add(new CSVWriterObject(i, String.valueOf(iterations),0, createTodoTime));
+
+            System.out.println("Finished "+iterations);
+        }
+   }
 
     @Test
-    public void testRuntimeCreateCategory1000Server() {
-        createNCategories(1000);
-        long result = RuntimeTests.createCategory("Mock Title", "Mock Description");
-        System.out.println("Creation Category: " + result);
+    public void modifyTodoUsage() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsCategory.add(new CSVWriterObject(5, "Create 1 Category, 1000 Objects Existing", result, 0));
-    }
-    @Test
-    public void testRuntimeCreate100Category1000Server() {
-        createNCategories(1000);
-        long result = RuntimeTests.createNCategory(100, "Mock Title", "Mock Description");
-        System.out.println("Creation 100 Categories: " + result);
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-        runTimeResultsCategory.add(new CSVWriterObject(6, "Create 100 Categories, 1000 Objects Existing", result, 0));
+            double createTodoTime = CPUUsageTests.modifyNTodoDescription(iterations, 1, "Mock Desc");
+            cpuUsageResultsModify.add(new CSVWriterObject(i, String.valueOf(iterations), 0, createTodoTime));
+
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testRuntimeCreate20Category1000Server() {
-        createNCategories(1000);
-        long result = RuntimeTests.createNCategory(20, "Mock Title", "Mock Description");
-        System.out.println("Creation 100 Categories: " + result);
+    public void deleteTodoUsage() {
+        createNTodos(NUMBER_OF_OBJECTS[test_number-1]);
 
-        runTimeResultsCategory.add(new CSVWriterObject(7, "Create 20 Categories, 1000 Objects Existing", result, 0));
-    }
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-    @Test
-    public void testRuntimeCreate500Category1000Server() {
-        createNCategories(1000);
-        long result = RuntimeTests.createNCategory(500, "Mock Title", "Mock Description");
-        System.out.println("Creation 100 Categories: " + result);
+            double createTodoTime = CPUUsageTests.deleteNTodo(iterations, 1);
+            cpuUsageResultsDelete.add(new CSVWriterObject(i, String.valueOf(iterations), 0, createTodoTime));
 
-        runTimeResultsCategory.add(new CSVWriterObject(8, "Create 500 Categories, 1000 Objects Existing", result, 0));
-    }
+            System.out.println("Finished "+iterations);
+        }
+  }
 
     @Test
-    public void testRuntimeDelete1Todo() {
-        createNTodos(100);
+    public void createCategoryRunTime() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
 
-        long result = RuntimeTests.deleteTodo(1);
-        runTimeResultsTodoDelete.add(new CSVWriterObject(1, "Delete 1 Todo, 100 Existing", result, 0));
-    }
+        System.out.println("Finished Setup");
 
-    @Test
-    public void testRuntimeDelete50Todo() {
-        createNTodos(100);
+        long startTime = System.currentTimeMillis();
 
-        long result = RuntimeTests.deleteNTodo(50, 1);
-        runTimeResultsTodoDelete.add(new CSVWriterObject(2, "Delete 50 Todo, 100 Existing", result, 0));
-    }
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-    @Test
-    public void testRuntimeDelete1Todo100Existing() {
-        createNTodos(1000);
+            long createTodoTime = RuntimeTests.createNCategory(iterations, "Mock Title", "Mock Description");
+            runTimeResultsTodoCreateCategories.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
 
-        long result = RuntimeTests.deleteTodo(1);
-        runTimeResultsTodoDelete.add(new CSVWriterObject(3, "Delete 1 Todo, 1000 Existing", result, 0));
+            System.out.println("Finished "+iterations);
+        }
+
+        long endTime = System.currentTimeMillis();
+        runTimeResultsTodoCreateCategories.add(new CSVWriterObject(test_number, String.valueOf("TOTAL"), endTime-startTime, 0));
     }
 
     @Test
-    public void testRuntimeDelete250Todo1000Existing() {
-        createNTodos(1000);
+    public void modifyCategoryRunTime() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
 
-        long result = RuntimeTests.deleteNTodo(250, 1);
-        runTimeResultsTodoDelete.add(new CSVWriterObject(4, "Delete 250 Todo, 1000 Existing", result, 0));
-    }
+        long startTime = System.currentTimeMillis();
 
-    @Test
-    public void testRuntimeModify1Todo() {
-        createNTodos(100);
-        long result = RuntimeTests.modifyTodoDescription(1, "Mock Description 2");
-        runTimeResultsTodoModify.add(new CSVWriterObject(1, "Modify 1 Todo, 100 Existing", result, 0));
-    }
-    @Test
-    public void testRuntimeModify50Todo() {
-        createNTodos(100);
-        long result = RuntimeTests.modifyTodoDescriptionNTimes(50, 1, "Mock Description 2");
-        runTimeResultsTodoModify.add(new CSVWriterObject(2, "Modify 50 Todo, 100 Existing", result, 0));
-    }
-    @Test
-    public void testRuntimeModify1Todo100Existing() {
-        createNTodos(100);
-        long result = RuntimeTests.modifyTodoDescription(1, "Mock Description 2");
-        runTimeResultsTodoModify.add(new CSVWriterObject(3, "Modify 1 Todo, 1000 Existing", result, 0));
-    }
-    @Test
-    public void testRuntimeModify250Todo1000Existing() {
-        createNTodos(100);
-        long result = RuntimeTests.modifyTodoDescriptionNTimes(250, 1, "Mock Description 2");
-        runTimeResultsTodoModify.add(new CSVWriterObject(4, "Modify 250 Todo, 1000 Existing", result, 0));
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = RuntimeTests.modifyNCategoryDescription(iterations, 1, "Mock Desc");
+            runTimeResultsTodoModifyCategories.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
+
+        long endTime = System.currentTimeMillis();
+        runTimeResultsTodoModifyCategories.add(new CSVWriterObject(test_number, String.valueOf("TOTAL"), endTime-startTime, 0));
     }
 
     @Test
-    public void testCPUUsageCreate1Todo() {
-        double result = CPUUsageTests.createTodo("Mock Title", true, "Mock Description" );
-        cpuUsageResultsCreate.add(new CSVWriterObject(1, "Create 1 Todo, Empty Server", 0, result));
-    }
-    @Test
-    public void testCPUUsageCreate100Todo() {
-        double result = CPUUsageTests.createNTodo(100, "Mock Title", true, "Mock Description" );
-        cpuUsageResultsCreate.add(new CSVWriterObject(1, "Create 1 Todo, Empty Server", 0, result));
-    }
-    @Test
-    public void testCPUUsageCreate1Todo1000Existing() {
-        createNTodos(1000);
-        double result = CPUUsageTests.createTodo("Mock Title", true, "Mock Description" );
-        cpuUsageResultsCreate.add(new CSVWriterObject(3, "Create 1 Todo, 1000 Existing", 0, result));
-    }
-    @Test
-    public void testCPUUsageCreate1000Todo1000Existing() {
-        createNTodos(1000);
-        double result = CPUUsageTests.createNTodo(1000, "Mock Title", true, "Mock Description" );
-        cpuUsageResultsCreate.add(new CSVWriterObject(4, "Create 1000 Todo, 1000 Existing", 0, result));
+    public void deleteCategoryRunTime() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
+
+        long startTime = System.currentTimeMillis();
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = RuntimeTests.deleteNCategories(iterations, 1);
+            runTimeResultsTodoDeleteCategories.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
+
+        long endTime = System.currentTimeMillis();
+        runTimeResultsTodoDeleteCategories.add(new CSVWriterObject(test_number, String.valueOf("TOTAL"), endTime-startTime, 0));
     }
 
     @Test
-    public void testCPUUsageModify1Todo() {
-        double result = CPUUsageTests.modifyTodoDescription(1, "Mock Description");
-        cpuUsageResultsModify.add(new CSVWriterObject(1, "Modify 1 Todo, Empty Server", 0, result));
-    }
-    @Test
-    public void testCPUUsageModify100Todo() {
-        double result = CPUUsageTests.modifyNTodoDescription(100, 1, "Mock Description");
-        cpuUsageResultsModify.add(new CSVWriterObject(2, "Modify 100 Todo, Empty Server", 0, result));
-    }
-    @Test
-    public void testCPUUsageModify1Todo1000Existing() {
-        createNTodos(1000);
-        double result = CPUUsageTests.modifyTodoDescription(1, "Mock Description");
-        cpuUsageResultsModify.add(new CSVWriterObject(3, "Modify 1 Todo, 1000 Existing", 0, result));
-    }
-    @Test
-    public void testCPUUsageModify100Todo1000Existing() {
-        createNTodos(1000);
-        double result = CPUUsageTests.modifyNTodoDescription(100, 1, "Mock Description");
-        cpuUsageResultsModify.add(new CSVWriterObject(4, "Modify 1000 Todo, 1000 Existing", 0, result));
+    public void createCategoryMemory() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
+
+        System.out.println("Finished Setup");
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = MemoryTests.createNCategories(iterations, "Mock Title",  "Mock Description");
+            memoryResultsCreateCategories.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testCPUUsageDelete1Todo() {
-        createNTodos(100);
+    public void modifyCategoryMemory() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
 
-        double result = CPUUsageTests.deleteTodo(1);
-        cpuUsageResultsDelete.add(new CSVWriterObject(1, "Delete 1 Todo, 100 Objects Server", 0, result));
-    }
-    @Test
-    public void testCPUUsageDelete50Todo() {
-        createNTodos(100);
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-        double result = CPUUsageTests.deleteNTodo(50, 1);
-        cpuUsageResultsDelete.add(new CSVWriterObject(2, "Delete 50 Todo, 100 Objects Server", 0, result));
-    }
-    @Test
-    public void testCPUUsageDelete1Todo1000Existing() {
-        createNTodos(1000);
-        double result = CPUUsageTests.deleteTodo(1);
-        cpuUsageResultsDelete.add(new CSVWriterObject(3, "Delete 1 Todo, 1000 Existing", 0, result));
-    }
-    @Test
-    public void testCPUUsageDelete250Todo1000Existing() {
-        createNTodos(1000);
-        double result = CPUUsageTests.deleteNTodo(250, 1);
-        cpuUsageResultsDelete.add(new CSVWriterObject(4, "Delete 250 Todo, 1000 Existing", 0, result));
+            long createTodoTime = MemoryTests.modifyNCategoriesDescriptions(iterations, 1, "Mock Desc");
+            memoryResultsModifyCategories.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testMemoryUsageCreate1Todo() {
-        long result = MemoryTests.createTodo("Mock Title", true, "Mock Description" );
-        memoryResultsCreate.add(new CSVWriterObject(1, "Create 1 Todo, Empty Server", result, 0));
-    }
-    @Test
-    public void testMemoryUsageCreate100Todo() {
-        long result = MemoryTests.createNTodo(100, "Mock Title", true, "Mock Description" );
-        memoryResultsCreate.add(new CSVWriterObject(2, "Create 100 Todo, Empty Server", result, 0));
-    }
-    @Test
-    public void testMemoryUsageCreate1Todo1000Existing() {
-        createNTodos(1000);
-        long result = MemoryTests.createTodo("Mock Title", true, "Mock Description" );
-        memoryResultsCreate.add(new CSVWriterObject(3, "Create 1 Todo, 1000 Existing", result, 0));
-    }
-    @Test
-    public void testMemoryUsageCreate1000Todo1000Existing() {
-        createNTodos(1000);
-        long result = MemoryTests.createNTodo(100, "Mock Title", true, "Mock Description" );
-        memoryResultsCreate.add(new CSVWriterObject(4, "Create 1000 Todo, 1000 Existing", result, 0));
+    public void deleteCategoryMemory() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            long createTodoTime = MemoryTests.deleteNCategories(iterations, 1);
+            memoryResultsDeleteCategories.add(new CSVWriterObject(i, String.valueOf(iterations), createTodoTime, 0));
+
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testMemoryUsageModify1Todo() {
-        long result = MemoryTests.modifyTodoDescription(1, "Mock Description");
-        memoryResultsModify.add(new CSVWriterObject(1, "Modify 1 Todo, Empty Server", result, 0));
-    }
-    @Test
-    public void testMemoryUsageModify100Todo() {
-        long result = MemoryTests.modifyNTodoDescription(100, 1, "Mock Description");
-        memoryResultsModify.add(new CSVWriterObject(2, "Modify 100 Todo, Empty Server", result, 0));
-    }
-    @Test
-    public void testMemoryUsageModify1Todo1000Existing() {
-        createNTodos(1000);
-        long result = MemoryTests.modifyTodoDescription(1, "Mock Description");
-        memoryResultsModify.add(new CSVWriterObject(3, "Modify 1 Todo, 1000 Existing", result, 0));
-    }
-    @Test
-    public void testMemoryUsageModify100Todo1000Existing() {
-        createNTodos(1000);
-        long result = MemoryTests.modifyNTodoDescription(100, 1, "Mock Description");
-        memoryResultsModify.add(new CSVWriterObject(4, "Modify 1000 Todo, 1000 Existing", result, 0));
+    public void createCategoryUsage() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
+
+        System.out.println("Finished Setup");
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            double createTodoTime = CPUUsageTests.createNCategories(iterations, "Mock Title", "Mock Description");
+            cpuUsageResultsCreateCategories.add(new CSVWriterObject(i, String.valueOf(iterations),0, createTodoTime));
+
+            System.out.println("Finished "+iterations);
+        }
     }
 
     @Test
-    public void testMemoryUsageDelete1Todo() {
-        createNTodos(100);
+    public void modifyCategoryUsage() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
 
-        long result = MemoryTests.deleteTodo(1);
-        memoryResultsCreate.add(new CSVWriterObject(1, "Delete 1 Todo, 100 Objects Server", result, 0));
-    }
-    @Test
-    public void testMemoryUsageDelete50Todo() {
-        createNTodos(100);
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
 
-        long result = MemoryTests.deleteNTodo(50, 1);
-        memoryResultsCreate.add(new CSVWriterObject(2, "Delete 50 Todo, 100 Objects Server", result, 0));
+            double createTodoTime = CPUUsageTests.modifyNCategoriesDescription(iterations, 1, "Mock Desc");
+            cpuUsageResultsModifyCategories.add(new CSVWriterObject(i, String.valueOf(iterations), 0, createTodoTime));
+
+            System.out.println("Finished "+iterations);
+        }
     }
+
     @Test
-    public void testMemoryUsageDelete1Todo1000Existing() {
-        createNTodos(1000);
-        long result = MemoryTests.deleteTodo(1);
-        memoryResultsCreate.add(new CSVWriterObject(3, "Delete 1 Todo, 1000 Existing", result, 0));
-    }
-    @Test
-    public void testMemoryUsageDelete250Todo1000Existing() {
-        createNTodos(1000);
-        long result = MemoryTests.deleteNTodo(250, 1);
-        memoryResultsCreate.add(new CSVWriterObject(4, "Delete 250 Todo, 1000 Existing", result, 0));
+    public void deleteNCategories() {
+        createNCategories(NUMBER_OF_OBJECTS[test_number-1]);
+
+        for(int i = 0; i < test_number; i++) {
+            int iterations = NUMBER_OF_OBJECTS[i];
+
+            double createTodoTime = CPUUsageTests.deleteNCategories(iterations, 1);
+            cpuUsageResultsDeleteCategories.add(new CSVWriterObject(i, String.valueOf(iterations), 0, createTodoTime));
+
+            System.out.println("Finished "+iterations);
+        }
     }
 
 

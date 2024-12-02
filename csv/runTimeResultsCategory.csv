@@ -1,9 +1,1 @@
 id,result,description
-7,Create 20 Categories, 1000 Objects Existing,22
-5,Create 1 Category, 1000 Objects Existing,0
-2,Create 100 Categories, Empty,181
-8,Create 500 Categories, 1000 Objects Existing,565
-4,Create 500 Categories, Empty Server,612
-3,Create 20 Categories, Empty,37
-1,Create 1 Category, Empty Server,7
-6,Create 100 Categories, 1000 Objects Existing,75

@@ -6,40 +6,15 @@ import io.restassured.specification.RequestSpecification;
 import org.json.simple.JSONObject;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+
 import com.sun.management.OperatingSystemMXBean;
 
 import static io.restassured.RestAssured.given;
 
 public class CPUUsageTests {
-    public static double createTodo(String title, boolean status, String description) {
-        Runtime runtime = Runtime.getRuntime();
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
-        RequestSpecification request = given();
-        request.header("Content-Type", "application/json");
-        request.header("Accept", "application/json");
-
-        JSONObject paramsMap = new JSONObject();
-        paramsMap.put("title", title);
-        paramsMap.put("description", description);
-        paramsMap.put("doneStatus", status);
-        request.body(paramsMap.toJSONString());
-
-        Runnable createCall = () -> {
-            Response response = request.post("/todos");
-        };
-
-        double beforeCall = osBean.getProcessCpuLoad();
-        createCall.run();
-        double afterCall = osBean.getProcessCpuLoad();
-
-        return afterCall - beforeCall;
-    }
-
     public static double createNTodo(int n, String title, boolean status, String description) {
-        Runtime runtime = Runtime.getRuntime();
         OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
 
         Runnable createCall = () -> {
             RequestSpecification request = given();
@@ -52,44 +27,21 @@ public class CPUUsageTests {
                 paramsMap.put("description", description+" "+i);
                 paramsMap.put("doneStatus", status);
                 request.body(paramsMap.toJSONString());
+
+                Response response = request.post("/todos");
             }
 
         };
 
-        double beforeCall = osBean.getProcessCpuLoad();
         createCall.run();
         double afterCall = osBean.getProcessCpuLoad();
 
-        return afterCall - beforeCall;
-    }
-
-    public static double modifyTodoDescription(int todoId, String new_description) {
-        Runtime runtime = Runtime.getRuntime();
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
-        Runnable createCall = () -> {
-            JSONObject todoMap = new JSONObject();
-            todoMap.put("description", new_description);
-
-            RequestSpecification request = RestAssured.given();
-            request.header("Content-Type", "application/json");
-            request.header("Accept", "application/json");
-            request.body(todoMap.toJSONString());
-
-            Response response = request.post("/todos/"+String.valueOf(todoId));
-        };
-
-        double beforeCall = osBean.getProcessCpuLoad();
-        createCall.run();
-        double afterCall = osBean.getProcessCpuLoad();
-
-        return afterCall - beforeCall;
+        return afterCall;
     }
 
     public static double modifyNTodoDescription(int n, int todoId, String new_description) {
         Runtime runtime = Runtime.getRuntime();
         OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
 
         Runnable createCall = () -> {
             for(int i = 0; i < n; i++) {
@@ -105,26 +57,10 @@ public class CPUUsageTests {
             }
         };
 
-        double beforeCall = osBean.getProcessCpuLoad();
         createCall.run();
         double afterCall = osBean.getProcessCpuLoad();
 
-        return afterCall - beforeCall;
-    }
-
-    public static double deleteTodo(int id) {
-        Runtime runtime = Runtime.getRuntime();
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
-        Runnable createCall = () -> {
-            Response response = given().when().delete("/todos/"+id);
-        };
-
-        double beforeCall = osBean.getProcessCpuLoad();
-        createCall.run();
-        double afterCall = osBean.getProcessCpuLoad();
-
-        return afterCall - beforeCall;
+        return afterCall;
     }
 
     public static double deleteNTodo(int n, int id) {
@@ -137,10 +73,74 @@ public class CPUUsageTests {
             }
         };
 
-        double beforeCall = osBean.getProcessCpuLoad();
         createCall.run();
         double afterCall = osBean.getProcessCpuLoad();
 
-        return afterCall - beforeCall;
+        return afterCall;
+    }
+
+    public static double createNCategories(int n, String title, String description) {
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
+        Runnable createCall = () -> {
+            RequestSpecification request = given();
+            request.header("Content-Type", "application/json");
+            request.header("Accept", "application/json");
+
+            for(int i = 0; i < n; i++) {
+                JSONObject paramsMap = new JSONObject();
+                paramsMap.put("title", title+" "+i);
+                paramsMap.put("description", description+" "+i);
+                request.body(paramsMap.toJSONString());
+
+                Response response = request.post("/categories");
+            }
+
+        };
+
+        createCall.run();
+        double afterCall = osBean.getProcessCpuLoad();
+
+        return afterCall;
+    }
+
+    public static double modifyNCategoriesDescription(int n, int todoId, String new_description) {
+        Runtime runtime = Runtime.getRuntime();
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
+        Runnable createCall = () -> {
+            for(int i = 0; i < n; i++) {
+                JSONObject todoMap = new JSONObject();
+                todoMap.put("description", new_description+" "+i);
+
+                RequestSpecification request = RestAssured.given();
+                request.header("Content-Type", "application/json");
+                request.header("Accept", "application/json");
+                request.body(todoMap.toJSONString());
+
+                Response response = request.post("/categories/"+String.valueOf(todoId+i));
+            }
+        };
+
+        createCall.run();
+        double afterCall = osBean.getProcessCpuLoad();
+
+        return afterCall;
+    }
+
+    public static double deleteNCategories(int n, int id) {
+        Runtime runtime = Runtime.getRuntime();
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
+        Runnable createCall = () -> {
+            for (int i =0; i < n; i++) {
+                Response response = given().when().delete("/categories/"+(id+i));
+            }
+        };
+
+        createCall.run();
+        double afterCall = osBean.getProcessCpuLoad();
+
+        return afterCall;
     }
 }
