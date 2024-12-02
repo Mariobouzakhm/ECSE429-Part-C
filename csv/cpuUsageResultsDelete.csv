@@ -1,0 +1,5 @@
+id,result,description
+2,Delete 50 Todo, 100 Objects Server,0.18804187774029427
+4,Delete 250 Todo, 1000 Existing,0.012193597798478797
+3,Delete 1 Todo, 1000 Existing,0.017319432176529283
+1,Delete 1 Todo, 100 Objects Server,0.004544693349541246

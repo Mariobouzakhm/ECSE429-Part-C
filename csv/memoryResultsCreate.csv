@@ -1,0 +1,9 @@
+id,result,description
+2,Create 100 Todo, Empty Server,-452544
+1,Delete 1 Todo, 100 Objects Server,-2832400
+2,Delete 50 Todo, 100 Objects Server,-2663552
+1,Create 1 Todo, Empty Server,-255184
+3,Create 1 Todo, 1000 Existing,-623504
+4,Delete 250 Todo, 1000 Existing,-226688
+4,Create 1000 Todo, 1000 Existing,-198352
+3,Delete 1 Todo, 1000 Existing,-1190112
