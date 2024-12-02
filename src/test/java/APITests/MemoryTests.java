@@ -34,7 +34,7 @@ public class MemoryTests {
 
         long afterCall = runtime.totalMemory() - runtime.freeMemory();
 
-        return afterCall - beforeCall;
+        return Math.abs(afterCall - beforeCall);
     }
 
     public static long modifyNTodoDescription(int n, int todoId, String new_description) {
@@ -60,7 +60,7 @@ public class MemoryTests {
 
         long afterCall = runtime.totalMemory() - runtime.freeMemory();
 
-        return afterCall - beforeCall;
+        return Math.abs(afterCall - beforeCall);
     }
 
     public static long deleteNTodo(int n, int id) {
@@ -72,15 +72,13 @@ public class MemoryTests {
             }
         };
 
-        System.gc();
         long beforeCall = runtime.totalMemory() - runtime.freeMemory();
 
         createCall.run();
 
-        System.gc();
         long afterCall = runtime.totalMemory() - runtime.freeMemory();
 
-        return afterCall - beforeCall;
+        return Math.abs(afterCall - beforeCall);
     }
 
     public static long createNCategories(int n, String title, String description) {
@@ -108,7 +106,7 @@ public class MemoryTests {
 
         long afterCall = runtime.totalMemory() - runtime.freeMemory();
 
-        return afterCall - beforeCall;
+        return Math.abs(afterCall - beforeCall);
     }
 
     public static long modifyNCategoriesDescriptions(int n, int todoId, String new_description) {
@@ -134,7 +132,7 @@ public class MemoryTests {
 
         long afterCall = runtime.totalMemory() - runtime.freeMemory();
 
-        return afterCall - beforeCall;
+        return Math.abs(afterCall - beforeCall);
     }
 
     public static long deleteNCategories(int n, int id) {
@@ -152,7 +150,7 @@ public class MemoryTests {
 
         long afterCall = runtime.totalMemory() - runtime.freeMemory();
 
-        return afterCall - beforeCall;
+        return Math.abs(afterCall - beforeCall);
     }
 }
 
